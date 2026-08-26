@@ -13,6 +13,7 @@ import {
 import { agentShares } from './agentShare';
 import { asyncTasks } from './asyncTask';
 import { chatGroups, chatGroupsAgents } from './chatGroup';
+import { documentComments } from './documentComment';
 import { documentHistories } from './documentHistory';
 import { documents, files, knowledgeBases } from './file';
 import { generationBatches, generations, generationTopics } from './generation';
@@ -98,6 +99,21 @@ export const topicRelations = relations(topics, ({ one, many }) => ({
   }),
   documents: many(topicDocuments),
   comments: many(topicComments),
+}));
+
+export const documentCommentsRelations = relations(documentComments, ({ one }) => ({
+  author: one(users, {
+    fields: [documentComments.authorUserId],
+    references: [users.id],
+  }),
+  document: one(documents, {
+    fields: [documentComments.documentId],
+    references: [documents.id],
+  }),
+  workspace: one(workspaces, {
+    fields: [documentComments.workspaceId],
+    references: [workspaces.id],
+  }),
 }));
 
 export const topicCommentsRelations = relations(topicComments, ({ one, many }) => ({
@@ -282,6 +298,7 @@ export const filesRelations = relations(files, ({ many, one }) => ({
 
 // Document-related relation definitions
 export const documentsRelations = relations(documents, ({ one, many }) => ({
+  comments: many(documentComments),
   file: one(files, {
     fields: [documents.fileId],
     references: [files.id],
